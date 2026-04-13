@@ -1,24 +1,24 @@
+import type { ReviewInterface } from '@/interfaces/ReviewInterface';
+import axios from 'axios';
 
-import type { BookInterface } from '@/interfaces/BookInterface';
-import { useBookStore } from '@/stores/bookstore.js';
-import type { CreateBookDTO } from '@/dtos/CreateBookDTO.js';
+export class ReviewService {
+  private static readonly API_URL =
+    'https://friendly-enigma-r449w5vj5v9r2rpg-3000.app.github.dev/api/reviews';
 
-export class BookService {
-  static getBooks(): BookInterface[] {
-    return useBookStore().books;
+  static async getReviews(): Promise<ReviewInterface[]> {
+    const { data } = await axios.get(this.API_URL);
+    return data;
   }
 
-  static getBookById(id: number): BookInterface | undefined {
-    return useBookStore().books.find((book) => book.id === id);
+  static async getReviewsByBookId(bookId: number): Promise<ReviewInterface[]> {
+    const { data } = await axios.get(`${this.API_URL}/book/${bookId}`);
+    return data;
   }
 
-  static createBook(book: CreateBookDTO): void {
-    const id = useBookStore().books.length + 1;
-    useBookStore().books.push({ id, ...book });
+  static async createReview(
+    review: Omit<ReviewInterface, 'id'>,
+  ): Promise<ReviewInterface> {
+    const { data } = await axios.post(this.API_URL, review);
+    return data;
   }
-
-  static deleteLastBook(): void {
-    useBookStore().books.pop();
-  }
-
 }
